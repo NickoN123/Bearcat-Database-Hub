@@ -127,11 +127,14 @@
     </div>
 
     <!-- Scripts -->
-    <script src="assets/vendor/fuse.min.js"></script>
-    <script src="assets/db.js"></script>
-    <script src="assets/search.js"></script>
-    <script src="assets/importer.js"></script>
-    <script src="assets/generator.js"></script>
-    <script src="assets/app.js"></script>
+    <!-- ✅ Load official Fuse.js library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js" defer></script>
+
+    <!-- ✅ Core app scripts (order matters) -->
+    <script src="assets/db.js" defer></script>
+    <script src="assets/search.js" defer></script>
+    <script src="assets/importer.js" defer></script>
+    <script src="assets/generator.js" defer></script>
+    <script src="assets/app.js" defer></script>
 </body>
 </html>
