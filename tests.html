@@ -1,0 +1,469 @@
+<!-- tests.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bearcat Ideas Hub - Tests</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .test-suite {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-suite h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .test {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .test.pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        .test.fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .stats {
+            font-size: 1.2em;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Bearcat Ideas Hub Test Suite</h1>
+    
+    <button onclick="runTests()">Run All Tests</button>
+    
+    <div id="stats" class="stats"></div>
+    <div id="results"></div>
+
+    <!-- Load application scripts -->
+    <script src="assets/vendor/fuse.min.js"></script>
+    <script src="assets/db.js"></script>
+    <script src="assets/search.js"></script>
+    <script src="assets/generator.js"></script>
+    <script src="assets/importer.js"></script>
+
+    <script>
+        // Simple test framework
+        class TestRunner {
+            constructor() {
+                this.tests = [];
+                this.results = [];
+            }
+
+            describe(suiteName, fn) {
+                this.currentSuite = suiteName;
+                fn();
+            }
+
+            it(testName, fn) {
+                this.tests.push({
+                    suite: this.currentSuite,
+                    name: testName,
+                    fn: fn
+                });
+            }
+
+            async run() {
+                this.results = [];
+                
+                for (const test of this.tests) {
+                    try {
+                        await test.fn();
+                        this.results.push({
+                            ...test,
+                            passed: true
+                        });
+                    } catch (error) {
+                        this.results.push({
+                            ...test,
+                            passed: false,
+                            error: error.message
+                        });
+                    }
+                }
+                
+                return this.results;
+            }
+
+            assert(condition, message) {
+                if (!condition) {
+                    throw new Error(message || 'Assertion failed');
+                }
+            }
+
+            assertEqual(actual, expected, message) {
+                if (<!-- tests.html (continued) -->
+                actual !== expected) {
+                    throw new Error(message || `Expected ${expected}, got ${actual}`);
+                }
+            }
+
+            assertGreaterThan(actual, expected, message) {
+                if (actual <= expected) {
+                    throw new Error(message || `Expected ${actual} > ${expected}`);
+                }
+            }
+
+            assertInRange(value, min, max, message) {
+                if (value < min || value > max) {
+                    throw new Error(message || `Expected ${value} between ${min} and ${max}`);
+                }
+            }
+        }
+
+        // Test Suite
+        const runner = new TestRunner();
+
+        // Generator Tests
+        runner.describe('Idea Generator', () => {
+            runner.it('should generate exactly 3 ideas', () => {
+                const generator = new IdeaGenerator();
+                const ideas = generator.generate('Football', 'Outdoor');
+                runner.assertEqual(ideas.length, 3, 'Should generate 3 ideas');
+            });
+
+            runner.it('should respect indoor/outdoor constraints', () => {
+                const generator = new IdeaGenerator();
+                const ideas = generator.generate('Basketball', 'Indoor');
+                ideas.forEach(idea => {
+                    runner.assertEqual(idea.indoor_outdoor, 'Indoor', 'All ideas should be indoor');
+                });
+            });
+
+            runner.it('should generate unique IDs', () => {
+                const generator = new IdeaGenerator();
+                const ideas = generator.generate('Football', 'Outdoor');
+                const ids = ideas.map(i => i.id);
+                const uniqueIds = new Set(ids);
+                runner.assertEqual(uniqueIds.size, ids.length, 'All IDs should be unique');
+            });
+
+            runner.it('should format IDs correctly (AA-001)', () => {
+                const generator = new IdeaGenerator();
+                const ideas = generator.generate('Soccer', 'Outdoor');
+                ideas.forEach(idea => {
+                    runner.assert(/^[A-Z]{2}-[0-9]{3}$/.test(idea.id), `Invalid ID format: ${idea.id}`);
+                });
+            });
+        });
+
+        // Near Match Detection Tests
+        runner.describe('Near Match Detection', () => {
+            runner.it('should calculate similarity correctly', () => {
+                const generator = new IdeaGenerator();
+                
+                const idea1 = {
+                    idea_title: 'Mascot Dance Party',
+                    summary: 'Dance with props at halftime',
+                    props_list: 'foam fingers, signs'
+                };
+                
+                const idea2 = {
+                    idea_title: 'Mascot Dance Party',
+                    summary: 'Dance with props at halftime',
+                    props_list: 'foam fingers, signs'
+                };
+                
+                const similarity = generator.calculateSimilarity(idea1, idea2);
+                runner.assertEqual(similarity, 1, 'Identical ideas should have similarity of 1');
+            });
+
+            runner.it('should detect near matches above threshold', () => {
+                const generator = new IdeaGenerator();
+                
+                const idea1 = {
+                    idea_title: 'Flag Run Through Crowd',
+                    summary: 'Run with giant flag',
+                    props_list: 'giant flag, smoke'
+                };
+                
+                const idea2 = {
+                    idea_title: 'Giant Flag Sprint',
+                    summary: 'Sprint with huge flag',
+                    props_list: 'huge flag, smoke machines'
+                };
+                
+                const similarity = generator.calculateSimilarity(idea1, idea2);
+                runner.assertGreaterThan(similarity, 0.4, 'Similar ideas should exceed threshold');
+            });
+
+            runner.it('should not match dissimilar ideas', () => {
+                const generator = new IdeaGenerator();
+                
+                const idea1 = {
+                    idea_title: 'Quiet Reading Time',
+                    summary: 'Read books to kids',
+                    props_list: 'books, chairs'
+                };
+                
+                const idea2 = {
+                    idea_title: 'Fireworks Spectacular',
+                    summary: 'Launch fireworks display',
+                    props_list: 'fireworks, launchers'
+                };
+                
+                const similarity = generator.calculateSimilarity(idea1, idea2);
+                runner.assert(similarity < 0.3, 'Different ideas should have low similarity');
+            });
+        });
+
+        // Search Tests
+        runner.describe('Post Search', () => {
+            runner.it('should build search index', () => {
+                const search = new PostSearch();
+                const posts = [
+                    { post_id: '1', caption_clean: 'Game day', hashtags: ['football'] },
+                    { post_id: '2', caption_clean: 'Victory celebration', hashtags: ['win'] }
+                ];
+                
+                search.buildIndex(posts);
+                runner.assert(search.fuse !== null, 'Fuse index should be built');
+            });
+
+            runner.it('should find posts by caption', () => {
+                const search = new PostSearch();
+                const posts = [
+                    { post_id: '1', caption_clean: 'Amazing game today', hashtags: [] },
+                    { post_id: '2', caption_clean: 'Study session', hashtags: [] }
+                ];
+                
+                search.buildIndex(posts);
+                const results = search.search('game');
+                runner.assertGreaterThan(results.length, 0, 'Should find posts with "game"');
+                runner.assertEqual(results[0].item.post_id, '1', 'Should find correct post');
+            });
+
+            runner.it('should find posts by hashtag', () => {
+                const search = new PostSearch();
+                const posts = [
+                    { post_id: '1', caption_clean: 'Post one', hashtags: ['bearcats', 'gameday'] },
+                    { post_id: '2', caption_clean: 'Post two', hashtags: ['study'] }
+                ];
+                
+                search.buildIndex(posts);
+                const results = search.search('bearcats');
+                runner.assertGreaterThan(results.length, 0, 'Should find posts with hashtag');
+            });
+
+            runner.it('should handle fuzzy matching', () => {
+                const search = new PostSearch();
+                const posts = [
+                    { post_id: '1', caption_clean: 'Basketball game tonight', hashtags: [] }
+                ];
+                
+                search.buildIndex(posts);
+                const results = search.search('bsketball'); // Typo
+                runner.assertGreaterThan(results.length, 0, 'Should find with fuzzy match');
+            });
+        });
+
+        // Importer Tests
+        runner.describe('Instagram Importer', () => {
+            runner.it('should extract hashtags correctly', () => {
+                const importer = new InstagramImporter();
+                const text = 'Great game! #BearcatPride #GameDay #GoBearcats';
+                const hashtags = importer.extractHashtags(text);
+                
+                runner.assertEqual(hashtags.length, 3, 'Should extract 3 hashtags');
+                runner.assert(hashtags.includes('bearcatpride'), 'Should lowercase hashtags');
+                runner.assert(!hashtags[0].includes('#'), 'Should remove # symbol');
+            });
+
+            runner.it('should extract mentions correctly', () => {
+                const importer = new InstagramImporter();
+                const text = 'Thanks @ucbearcats and @cincinnati for the support!';
+                const mentions = importer.extractMentions(text);
+                
+                runner.assertEqual(mentions.length, 2, 'Should extract 2 mentions');
+                runner.assert(mentions.includes('ucbearcats'), 'Should find ucbearcats');
+                runner.assert(!mentions[0].includes('@'), 'Should remove @ symbol');
+            });
+
+            runner.it('should clean captions properly', () => {
+                const importer = new InstagramImporter();
+                const text = 'Game day! #BearcatPride @ucbearcats   Extra    spaces';
+                const clean = importer.cleanCaption(text);
+                
+                runner.assert(!clean.includes('#'), 'Should remove hashtags');
+                runner.assert(!clean.includes('@'), 'Should remove mentions');
+                runner.assert(!clean.includes('  '), 'Should normalize spaces');
+            });
+
+            runner.it('should generate valid post IDs', () => {
+                const importer = new InstagramImporter();
+                const id1 = importer.generateId();
+                const id2 = importer.generateId();
+                
+                runner.assert(id1.startsWith('post_'), 'ID should start with post_');
+                runner.assert(id1 !== id2, 'IDs should be unique');
+            });
+
+            runner.it('should derive tags from content', () => {
+                const importer = new InstagramImporter();
+                const text = 'Amazing victory at the game! Great community spirit!';
+                const tags = importer.deriveTags(text);
+                
+                runner.assert(tags.includes('game'), 'Should tag "game"');
+                runner.assert(tags.includes('community'), 'Should tag "community"');
+                runner.assert(tags.includes('spirit'), 'Should tag "spirit"');
+            });
+        });
+
+        // Database Tests
+        runner.describe('IndexedDB Operations', () => {
+            runner.it('should initialize database', async () => {
+                const db = new PostDB();
+                await db.init();
+                runner.assert(db.db !== null, 'Database should be initialized');
+            });
+
+            runner.it('should save and retrieve a post', async () => {
+                const db = new PostDB();
+                await db.init();
+                
+                const post = {
+                    post_id: 'test_123',
+                    shortcode: 'abc123',
+                    caption_clean: 'Test post',
+                    timestamp_iso: new Date().toISOString()
+                };
+                
+                await db.savePost(post);
+                const retrieved = await db.get('posts', 'test_123');
+                
+                runner.assertEqual(retrieved.post_id, post.post_id, 'Should retrieve saved post');
+                runner.assertEqual(retrieved.caption_clean, post.caption_clean, 'Caption should match');
+            });
+
+            runner.it('should bulk save posts', async () => {
+                const db = new PostDB();
+                await db.init();
+                
+                const posts = [
+                    { post_id: 'bulk_1', shortcode: 'b1', timestamp_iso: new Date().toISOString() },
+                    { post_id: 'bulk_2', shortcode: 'b2', timestamp_iso: new Date().toISOString() },
+                    { post_id: 'bulk_3', shortcode: 'b3', timestamp_iso: new Date().toISOString() }
+                ];
+                
+                const count = await db.bulkSave('posts', posts);
+                runner.assertEqual(count, 3, 'Should save all posts');
+                
+                const all = await db.getAllPosts();
+                runner.assertGreaterThan(all.length, 2, 'Should have saved posts');
+            });
+        });
+
+        // Seeded Random Tests
+        runner.describe('Deterministic Random', () => {
+            runner.it('should produce consistent results with same seed', () => {
+                const gen1 = new IdeaGenerator();
+                const gen2 = new IdeaGenerator();
+                
+                gen1.seed = 12345;
+                gen2.seed = 12345;
+                
+                const rand1 = gen1.random(100);
+                const rand2 = gen2.random(100);
+                
+                runner.assertEqual(rand1, rand2, 'Same seed should produce same results');
+            });
+
+            runner.it('should produce values in range', () => {
+                const generator = new IdeaGenerator();
+                
+                for (let i = 0; i < 100; i++) {
+                    const value = generator.random(10);
+                    runner.assertInRange(value, 0, 9, 'Random value should be in range');
+                }
+            });
+        });
+
+        // Run tests and display results
+        async function runTests() {
+            const resultsDiv = document.getElementById('results');
+            const statsDiv = document.getElementById('stats');
+            
+            resultsDiv.innerHTML = '<h2>Running tests...</h2>';
+            
+            const results = await runner.run();
+            
+            // Group by suite
+            const suites = {};
+            results.forEach(result => {
+                if (!suites[result.suite]) {
+                    suites[result.suite] = [];
+                }
+                suites[result.suite].push(result);
+            });
+            
+            // Display results
+            resultsDiv.innerHTML = '';
+            Object.entries(suites).forEach(([suite, tests]) => {
+                const suiteDiv = document.createElement('div');
+                suiteDiv.className = 'test-suite';
+                
+                const passed = tests.filter(t => t.passed).length;
+                const total = tests.length;
+                
+                suiteDiv.innerHTML = `<h2>${suite} (${passed}/${total})</h2>`;
+                
+                tests.forEach(test => {
+                    const testDiv = document.createElement('div');
+                    testDiv.className = `test ${test.passed ? 'pass' : 'fail'}`;
+                    testDiv.innerHTML = `
+                        <strong>${test.passed ? '✓' : '✗'} ${test.name}</strong>
+                        ${test.error ? `<br><small>${test.error}</small>` : ''}
+                    `;
+                    suiteDiv.appendChild(testDiv);
+                });
+                
+                resultsDiv.appendChild(suiteDiv);
+            });
+            
+            // Display stats
+            const totalTests = results.length;
+            const passedTests = results.filter(r => r.passed).length;
+            const failedTests = totalTests - passedTests;
+            const passRate = Math.round((passedTests / totalTests) * 100);
+            
+            statsDiv.innerHTML = `
+                <strong>Test Results:</strong>
+                ${passedTests} passed, ${failedTests} failed, ${totalTests} total
+                (${passRate}% pass rate)
+            `;
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>
