@@ -1,0 +1,198 @@
+/* data/schema.json */
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Post": {
+      "type": "object",
+      "required": ["post_id", "shortcode", "permalink", "timestamp_iso"],
+      "properties": {
+        "post_id": {
+          "type": "string",
+          "description": "Unique identifier for the post"
+        },
+        "shortcode": {
+          "type": "string",
+          "description": "Instagram shortcode"
+        },
+        "permalink": {
+          "type": "string",
+          "format": "uri",
+          "description": "Full URL to Instagram post"
+        },
+        "timestamp_iso": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp"
+        },
+        "year": {
+          "type": "number",
+          "description": "Year extracted from timestamp"
+        },
+        "month": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 12,
+          "description": "Month extracted from timestamp"
+        },
+        "weekday": {
+          "type": "string",
+          "enum": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        },
+        "media_type": {
+          "type": "string",
+          "enum": ["Image", "Video", "Carousel", "Reel"],
+          "description": "Type of media content"
+        },
+        "caption_raw": {
+          "type": "string",
+          "description": "Original caption with hashtags and mentions"
+        },
+        "caption_clean": {
+          "type": "string",
+          "description": "Caption without hashtags or mentions"
+        },
+        "hashtags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of hashtags without # symbol"
+        },
+        "mentions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of mentions without @ symbol"
+        },
+        "tagged_accounts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "location_name": {
+          "type": "string",
+          "description": "Location tag if available"
+        },
+        "likes": {
+          "type": "number",
+          "minimum": 0
+        },
+        "comments": {
+          "type": "number",
+          "minimum": 0
+        },
+        "views": {
+          "type": "number",
+          "minimum": 0,
+          "description": "View count for videos/reels"
+        },
+        "slides": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": {"type": "string"},
+              "alt": {"type": "string"},
+              "width": {"type": "number"},
+              "height": {"type": "number"}
+            }
+          },
+          "description": "Carousel slide information"
+        },
+        "audio_name": {
+          "type": "string",
+          "description": "Audio track name for reels"
+        },
+        "duration_sec": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Duration in seconds for videos/reels"
+        },
+        "derived_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Keywords inferred during import"
+        },
+        "idea_ref_id": {
+          "type": "string",
+          "description": "Link to curated idea if known"
+        },
+        "media_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "thumbnail_url": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "Idea": {
+      "type": "object",
+      "required": ["id", "idea_title", "summary", "media_type", "event_type", "indoor_outdoor"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}-[0-9]{3}$",
+          "description": "ID like AA-001"
+        },
+        "idea_title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "media_type": {
+          "type": "string",
+          "enum": ["Live_Skit", "Prop", "TikTok", "Reel", "Instagram_Post", "YouTube_Hype", "Photo_Concept"]
+        },
+        "event_type": {
+          "type": "string",
+          "enum": ["Football", "Basketball", "Volleyball", "Soccer", "Baseball", "Pep_Rally", "Community_Event", "Campus_Activation", "Other"]
+        },
+        "indoor_outdoor": {
+          "type": "string",
+          "enum": ["Indoor", "Outdoor", "Unknown"]
+        },
+        "last_used_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 date when last used"
+        },
+        "years_since_last_use": {
+          "type": "number",
+          "description": "Calculated years since last use"
+        },
+        "props_list": {
+          "type": "string"
+        },
+        "costume_notes": {
+          "type": "string"
+        },
+        "crowd_callouts": {
+          "type": "string"
+        },
+        "risk_checks": {
+          "type": "string"
+        },
+        "delivery_plan": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "trend_source": {
+          "type": "string",
+          "description": "Optional trend or meme reference"
+        }
+      }
+    }
+  }
+}
