@@ -1,0 +1,60 @@
+/* data/lookups.json */
+{
+  "media_types": [
+    "Image",
+    "Video", 
+    "Carousel",
+    "Reel"
+  ],
+  "idea_media_types": [
+    "Live_Skit",
+    "Prop",
+    "TikTok",
+    "Reel",
+    "Instagram_Post",
+    "YouTube_Hype",
+    "Photo_Concept"
+  ],
+  "event_types": [
+    "Football",
+    "Basketball",
+    "Volleyball",
+    "Soccer",
+    "Baseball",
+    "Pep_Rally",
+    "Community_Event",
+    "Campus_Activation",
+    "Other"
+  ],
+  "indoor_outdoor": [
+    "Indoor",
+    "Outdoor",
+    "Unknown"
+  ],
+  "season_tags": [
+    "Fall",
+    "Winter",
+    "Spring",
+    "Summer"
+  ],
+  "themes": [
+    "retro",
+    "rivalry", 
+    "kids",
+    "alumni",
+    "meme",
+    "trending",
+    "classic",
+    "holiday",
+    "throwback"
+  ],
+  "weekdays": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ]
+}
