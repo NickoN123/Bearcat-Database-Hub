@@ -1,0 +1,137 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bearcat Ideas Hub</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🐻 Bearcat Ideas Hub</h1>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                <span class="icon">🌓</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation and Search -->
+    <nav class="search-bar" role="navigation" aria-label="Search and filters">
+        <div class="container">
+            <div class="search-wrapper">
+                <input 
+                    type="search" 
+                    id="search-input" 
+                    class="search-input" 
+                    placeholder="Search posts, captions, hashtags..."
+                    aria-label="Search posts"
+                >
+                <div class="search-meta">
+                    <span id="result-count">Loading...</span>
+                </div>
+            </div>
+            
+            <!-- Filter Chips -->
+            <div class="filter-chips" role="group" aria-label="Filter options">
+                <button class="chip" data-filter="media_type" data-value="Image">Images</button>
+                <button class="chip" data-filter="media_type" data-value="Video">Videos</button>
+                <button class="chip" data-filter="media_type" data-value="Reel">Reels</button>
+                <button class="chip" data-filter="media_type" data-value="Carousel">Carousels</button>
+                <select id="year-filter" class="filter-select" aria-label="Filter by year">
+                    <option value="">All Years</option>
+                </select>
+                <select id="event-filter" class="filter-select" aria-label="Filter by event type">
+                    <option value="">All Events</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main" class="main">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Results Grid -->
+                <section class="results-section" aria-label="Search results">
+                    <div id="results-grid" class="results-grid"></div>
+                    <div id="load-more" class="load-more"></div>
+                </section>
+
+                <!-- Sidebar -->
+                <aside class="sidebar" aria-label="Tools">
+                    <!-- Import Section -->
+                    <section class="panel import-panel">
+                        <h2>Import Data</h2>
+                        <div 
+                            id="drop-zone" 
+                            class="drop-zone"
+                            role="button"
+                            tabindex="0"
+                            aria-label="Drag and drop Instagram HTML files or click to browse"
+                        >
+                            <p>📁 Drag Instagram HTML files here</p>
+                            <p>or <button class="link-button">browse</button></p>
+                            <input type="file" id="file-input" multiple accept=".html" hidden>
+                        </div>
+                        <div id="import-status" class="import-status"></div>
+                        <button id="export-btn" class="btn btn-secondary" hidden>
+                            💾 Download Updated Dataset
+                        </button>
+                    </section>
+
+                    <!-- Idea Generator -->
+                    <section class="panel generator-panel">
+                        <h2>Idea Generator</h2>
+                        <div class="generator-controls">
+                            <label for="gen-event">Event Type</label>
+                            <select id="gen-event" class="input">
+                                <option value="">Select...</option>
+                            </select>
+                            
+                            <label for="gen-location">Location</label>
+                            <select id="gen-location" class="input">
+                                <option value="">Select...</option>
+                                <option value="Indoor">Indoor</option>
+                                <option value="Outdoor">Outdoor</option>
+                            </select>
+                            
+                            <label for="gen-theme">Theme (Optional)</label>
+                            <input type="text" id="gen-theme" class="input" placeholder="retro, rivalry, kids...">
+                            
+                            <button id="generate-btn" class="btn btn-primary">
+                                ✨ Generate Ideas
+                            </button>
+                            
+                            <div id="ideas-output" class="ideas-output"></div>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <!-- Media Viewer Modal -->
+    <div id="viewer-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+        <div class="modal-overlay" data-close></div>
+        <div class="modal-content">
+            <button class="modal-close" data-close aria-label="Close viewer">×</button>
+            <h2 id="modal-title" class="sr-only">Media Viewer</h2>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/vendor/fuse.min.js"></script>
+    <script src="assets/db.js"></script>
+    <script src="assets/search.js"></script>
+    <script src="assets/importer.js"></script>
+    <script src="assets/generator.js"></script>
+    <script src="assets/app.js"></script>
+</body>
+</html>
