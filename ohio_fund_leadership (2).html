@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The O.H.I.O. Fund Complete Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f35 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 60px 80px;
+            position: relative;
+        }
+
+        .slide-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 40px;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            overflow-y: auto;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .metric-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 18px;
+        }
+
+        .metric-divider {
+            margin: 15px 0;
+            padding-top: 15px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 16px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .score-display {
+            text-align: center;
+            padding: 25px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 16px;
+            margin-top: 25px;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .score-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 900;
+            transition: all 0.4s;
+        }
+
+        .score-circle:hover {
+            transform: scale(1.1);
+        }
+
+        .score-circle.jobsohio {
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+            box-shadow: 0 15px 50px rgba(0, 212, 255, 0.6);
+        }
+
+        .score-circle.ohiofund {
+            background: linear-gradient(135deg, #ffd93d 0%, #f4b41a 100%);
+            box-shadow: 0 15px 50px rgba(255, 215, 61, 0.6);
+            color: #0a0e1a;
+        }
+
+        .score-sublabel {
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.05) 100%);
+            border-left: 5px solid #00d4ff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .insight-label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .insight-text {
+            font-size: 17px;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(0, 212, 255, 0.25);
+            border: 3px solid #00d4ff;
+            color: #00d4ff;
+            padding: 15px 30px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: rgba(0, 212, 255, 0.5);
+            transform: translateY(-4px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 14px;
+            z-index: 1000;
+        }
+
+        .indicator-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+
+        .indicator-dot:hover {
+            background: rgba(0, 212, 255, 0.7);
+            transform: scale(1.3);
+        }
+
+        .indicator-dot.active {
+            background: #00d4ff;
+            width: 45px;
+            border-radius: 7px;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 1);
+        }
+
+        .archetype-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            transition: all 0.4s ease;
+        }
+
+        .archetype-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.4);
+        }
+
+        .archetype-symbol {
+            font-size: 72px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .archetype-leader-name {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .archetype-animal {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .archetype-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .final-scoreboard {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.05) 100%);
+            border: 3px solid rgba(0, 212, 255, 0.4);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .scoreboard-header {
+            display: grid;
+            grid-template-columns: 2fr repeat(5, 1fr) 1.5fr;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scoreboard-row {
+            display: grid;
+            grid-template-columns: 2fr repeat(5, 1fr) 1.5fr;
+            gap: 15px;
+            padding: 25px 20px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .scoreboard-row:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(10px);
+        }
+
+        .scoreboard-brand {
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .scoreboard-cell {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .final-score {
+            font-size: 28px;
+            font-weight: 900;
+            text-align: center;
+            padding: 10px 15px;
+            background: rgba(0, 212, 255, 0.25);
+            border-radius: 12px;
+            border: 2px solid #00d4ff;
+        }
+
+        .winner-section {
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.3) 0%, rgba(0, 150, 255, 0.2) 100%);
+            border: 4px solid #00d4ff;
+            border-radius: 24px;
+            position: relative;
+        }
+
+        .winner-title {
+            font-size: 44px;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .winner-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+            color: #0a0e1a;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 28px;
+            font-weight: 900;
+            margin: 20px 0;
+        }
+
+        .winner-insight {
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 900px;
+            margin: 25px auto 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+    </style>
+</head>
+<body>
+    <!-- Slide 1: Executive Summary -->
+    <div class="slide" data-slide="1">
+        <div class="slide-title">The Ohio Fund: Executive Summary</div>
+        <div style="font-size: 18px; color: rgba(0, 212, 255, 0.8); margin-bottom: 35px; font-weight: 600; letter-spacing: 0.5px;">Powered by BrandRank Analysis of LLM Answer Engines</div>
+        <div class="content">
+            <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 212, 255, 0.05) 100%); border: 3px solid rgba(0, 212, 255, 0.4); border-radius: 16px; padding: 35px 40px; margin-bottom: 30px;">
+                <div style="font-size: 28px; font-weight: 900; color: #00d4ff; margin-bottom: 20px;">Key Finding</div>
+                <div style="font-size: 20px; line-height: 1.6; color: rgba(255, 255, 255, 0.95); margin-bottom: 25px;">
+                    The O.H.I.O. Fund combines exceptional leadership diversity with proven execution capability, while JobsOhio maintains clear organizational superiority over the nascent Ohio Fund across all performance dimensions.
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; border-left: 3px solid #00d4ff;">
+                        <div style="font-size: 16px; font-weight: 700; color: #00d4ff; margin-bottom: 8px;">Leadership Excellence</div>
+                        <div style="font-size: 15px; line-height: 1.5; color: rgba(255, 255, 255, 0.85);">Four leaders bring complementary strengths in vision, equity, governance, and domain expertise</div>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; border-left: 3px solid #00d4ff;">
+                        <div style="font-size: 16px; font-weight: 700; color: #00d4ff; margin-bottom: 8px;">Organizational Gap</div>
+                        <div style="font-size: 15px; line-height: 1.5; color: rgba(255, 255, 255, 0.85);">JobsOhio outperforms Ohio Fund by 2.56 points with superior track record and digital maturity</div>
+                    </div>
+                    <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px; border-left: 3px solid #00d4ff;">
+                        <div style="font-size: 16px; font-weight: 700; color: #00d4ff; margin-bottom: 8px;">Strategic Risk</div>
+                        <div style="font-size: 15px; line-height: 1.5; color: rgba(255, 255, 255, 0.85);">Duplication concerns and structural inefficiencies threaten both organizations' effectiveness</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 30px;">
+                    <div style="font-size: 24px; font-weight: 900; color: #00d4ff; margin-bottom: 20px; text-align: center;">O.H.I.O. Fund Leadership Scores</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 36px; font-weight: 900; color: #ffffff;">9.0</div>
+                            <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 5px;">Kvamme</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 36px; font-weight: 900; color: #ffffff;">8.0</div>
+                            <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 5px;">Leach</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 36px; font-weight: 900; color: #ffffff;">7.0</div>
+                            <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 5px;">Meyer</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 36px; font-weight: 900; color: #ffffff;">7.0</div>
+                            <div style="font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-top: 5px;">Venerable</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 30px;">
+                    <div style="font-size: 24px; font-weight: 900; color: #00d4ff; margin-bottom: 20px; text-align: center;">Organizational Comparison</div>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 40px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 48px; font-weight: 900; color: #00d4ff;">7.32</div>
+                            <div style="font-size: 16px; color: rgba(255, 255, 255, 0.7); margin-top: 8px;">JobsOhio</div>
+                        </div>
+                        <div style="font-size: 32px; color: rgba(255, 255, 255, 0.5);">vs</div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 48px; font-weight: 900; color: #ffd93d;">4.76</div>
+                            <div style="font-size: 16px; color: rgba(255, 255, 255, 0.7); margin-top: 8px;">The Ohio Fund</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="insight-label">Strategic Insight</div>
+                <div class="insight-text">
+                    The O.H.I.O. Fund's leadership represents a uniquely Ohio solution combining Silicon Valley vision with Midwestern equity and operational discipline. Meanwhile, JobsOhio's established track record, digital infrastructure, and brand clarity provide significant competitive advantages, though both organizations face political vulnerabilities and must address duplication concerns to maximize Ohio's economic development impact.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 2: Leadership Overview -->
+    <div class="slide" data-slide="2" style="display: none;">
+        <div class="slide-title">The O.H.I.O. Fund Leadership Team</div>
+        <div class="content">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px;">
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.03) 100%); border: 2px solid rgba(0, 212, 255, 0.3); border-radius: 16px; padding: 35px 30px; position: relative;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00d4ff, #0096ff); border-radius: 16px 16px 0 0;"></div>
+                    <div style="font-size: 26px; font-weight: 900; color: #00d4ff; margin-bottom: 12px;">Mark Kvamme</div>
+                    <div style="font-size: 48px; font-weight: 900; color: #ffffff; margin: 20px 0; text-align: center;">9.0</div>
+                    <div style="font-size: 14px; color: rgba(255, 255, 255, 0.5); text-align: center; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Executive Score</div>
+                    <div style="font-size: 15px; color: rgba(255, 255, 255, 0.7); line-height: 1.5;">Visionary founder with Silicon Valley acumen bringing national-caliber venture pedigree to Midwestern infrastructure and startup capital</div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.03) 100%); border: 2px solid rgba(0, 212, 255, 0.3); border-radius: 16px; padding: 35px 30px; position: relative;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00d4ff, #0096ff); border-radius: 16px 16px 0 0;"></div>
+                    <div style="font-size: 26px; font-weight: 900; color: #00d4ff; margin-bottom: 12px;">Ray Leach</div>
+                    <div style="font-size: 48px; font-weight: 900; color: #ffffff; margin: 20px 0; text-align: center;">8.0</div>
+                    <div style="font-size: 14px; color: rgba(255, 255, 255, 0.5); text-align: center; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Executive Score</div>
+                    <div style="font-size: 15px; color: rgba(255, 255, 255, 0.7); line-height: 1.5;">Quiet powerhouse and institutional builder blending nonprofit, philanthropic, and public capital into inclusive venture strategies</div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.03) 100%); border: 2px solid rgba(0, 212, 255, 0.3); border-radius: 16px; padding: 35px 30px; position: relative;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00d4ff, #0096ff); border-radius: 16px 16px 0 0;"></div>
+                    <div style="font-size: 26px; font-weight: 900; color: #00d4ff; margin-bottom: 12px;">Jill Meyer</div>
+                    <div style="font-size: 48px; font-weight: 900; color: #ffffff; margin: 20px 0; text-align: center;">7.0</div>
+                    <div style="font-size: 14px; color: rgba(255, 255, 255, 0.5); text-align: center; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Executive Score</div>
+                    <div style="font-size: 15px; color: rgba(255, 255, 255, 0.7); line-height: 1.5;">Regional diplomat and governance specialist bringing credibility, legal sophistication, and civic alignment to Cincinnati's role</div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.03) 100%); border: 2px solid rgba(0, 212, 255, 0.3); border-radius: 16px; padding: 35px 30px; position: relative;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00d4ff, #0096ff); border-radius: 16px 16px 0 0;"></div>
+                    <div style="font-size: 26px; font-weight: 900; color: #00d4ff; margin-bottom: 12px;">Mike Venerable</div>
+                    <div style="font-size: 48px; font-weight: 900; color: #ffffff; margin: 20px 0; text-align: center;">7.0</div>
+                    <div style="font-size: 14px; color: rgba(255, 255, 255, 0.5); text-align: center; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Executive Score</div>
+                    <div style="font-size: 15px; color: rgba(255, 255, 255, 0.7); line-height: 1.5;">Domain operator with deep healthcare and life sciences experience, scaling that playbook across broader venture portfolio</div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="insight-label">Strategic Implications</div>
+                <div class="insight-text">
+                    The O.H.I.O. Fund is one of the most ambitious state-based investment vehicles in the U.S. today—and it works because its leadership team is diversified not just in expertise, but in philosophy. This isn't a Silicon Valley clone. It's a uniquely Ohio solution—pulling together vision, social equity, place-based strategy, and operational discipline.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: Leadership Vision -->
+    <div class="slide" data-slide="3" style="display: none;">
+        <div class="slide-title">Leadership Vision Summarized</div>
+        <div class="content">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.12) 0%, rgba(0, 212, 255, 0.03) 100%); border-left: 5px solid #00d4ff; padding: 30px; border-radius: 12px;">
+                    <div style="font-size: 22px; font-weight: 900; color: #00d4ff; margin-bottom: 15px;">Mark Kvamme</div>
+                    <div style="font-size: 17px; line-height: 1.7; color: rgba(255, 255, 255, 0.9); font-style: italic; margin-bottom: 20px;">"Catalyzing Ohio's economic rebirth through place-based capital."</div>
+                    <div style="font-size: 15px; line-height: 1.6; color: rgba(255, 255, 255, 0.7);">He envisions Ohio as a sovereign-like investment platform—something akin to Temasek or SoftBank, grounded in Midwestern realities.</div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.12) 0%, rgba(0, 212, 255, 0.03) 100%); border-left: 5px solid #00d4ff; padding: 30px; border-radius: 12px;">
+                    <div style="font-size: 22px; font-weight: 900; color: #00d4ff; margin-bottom: 15px;">Ray Leach</div>
+                    <div style="font-size: 17px; line-height: 1.7; color: rgba(255, 255, 255, 0.9); font-style: italic; margin-bottom: 20px;">"Equity-focused capital architect building inclusive economic ecosystems."</div>
+                    <div style="font-size: 15px; line-height: 1.6; color: rgba(255, 255, 255, 0.7);">Leach brings a moral dimension to capital deployment, focusing on racial equity, entrepreneurship inclusion, and ecosystem access.</div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.12) 0%, rgba(0, 212, 255, 0.03) 100%); border-left: 5px solid #00d4ff; padding: 30px; border-radius: 12px;">
+                    <div style="font-size: 22px; font-weight: 900; color: #00d4ff; margin-bottom: 15px;">Jill Meyer</div>
+                    <div style="font-size: 17px; line-height: 1.7; color: rgba(255, 255, 255, 0.9); font-style: italic; margin-bottom: 20px;">"Driving disciplined regional growth with legal and civic foresight."</div>
+                    <div style="font-size: 15px; line-height: 1.6; color: rgba(255, 255, 255, 0.7);">Her strength is navigating governance, compliance, and local trust—critical in politically complex cities like Cincinnati.</div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.12) 0%, rgba(0, 212, 255, 0.03) 100%); border-left: 5px solid #00d4ff; padding: 30px; border-radius: 12px;">
+                    <div style="font-size: 22px; font-weight: 900; color: #00d4ff; margin-bottom: 15px;">Mike Venerable</div>
+                    <div style="font-size: 17px; line-height: 1.7; color: rgba(255, 255, 255, 0.9); font-style: italic; margin-bottom: 20px;">"Scaling healthcare innovation from Cincinnati to statewide impact."</div>
+                    <div style="font-size: 15px; line-height: 1.6; color: rgba(255, 255, 255, 0.7);">He translates operational and domain depth into venture acceleration, particularly in complex verticals like health and biosciences.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Strengths & Weaknesses -->
+    <div class="slide" data-slide="4" style="display: none;">
+        <div class="slide-title">Surprising Strengths & Weaknesses</div>
+        <div class="content">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 35px;">
+                    <div style="font-size: 24px; font-weight: 700; color: #00d4ff; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid rgba(0, 212, 255, 0.3);">Strengths</div>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Mark Kvamme</div>
+                        <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">Blends venture capital instincts with infrastructure investment, allowing The O.H.I.O. Fund to straddle multiple asset classes. He can think like a VC, but also like a sovereign wealth fund operator.</div>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Ray Leach</div>
+                        <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">He's the glue. Leach has spent decades at the intersection of economic justice, venture capital, and public funding. His credibility allows the fund to partner with cities, universities, and local leaders in ways that pure VCs can't.</div>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Jill Meyer</div>
+                        <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">Exceptional regional alignment. Meyer's past as head of the Cincinnati Chamber and legal practice gives her deep connective tissue in one of the fund's key metros.</div>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Mike Venerable</div>
+                        <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">Highly credible in health innovation. Venerable's roots at CincyTech give him operational know-how in evaluating clinical risk, medtech, and scaling scientific ventures.</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 35px;">
+                    <div style="font-size: 24px; font-weight: 700; color: #00d4ff; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid rgba(0, 212, 255, 0.3);">Weaknesses</div>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Mark Kvamme</div>
+                        <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">There's a real risk that his ambition—Ohio as the new Singapore—could outrun institutional capacity or create mismatched stakeholder expectations, particularly among more impact-oriented partners.</div>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Ray Leach</div>
+                        <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">His nonprofit roots, while vital to inclusion, may limit his appetite or bandwidth for high-velocity, high-risk tech investments—slightly misaligned with the growth equity parts of the fund.</div>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Jill Meyer</div>
+                        <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">She lacks a track record in venture investing or innovation-scale leadership. Her value is relational and structural, not entrepreneurial or risk-driven.</div>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Mike Venerable</div>
+                        <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">Less visible as a statewide or cross-sector leader; tends to be health-sector focused, with lower engagement in broader infrastructure or tech narratives.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Leadership Archetypes -->
+    <div class="slide" data-slide="5" style="display: none;">
+        <div class="slide-title">Animal Archetypes: Leadership Symbolism</div>
+        <div class="content">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px;">
+                <div class="archetype-card">
+                    <div class="archetype-leader-name" style="color: #00d4ff;">Mark Kvamme</div>
+                    <div class="archetype-animal">Phoenix</div>
+                    <div class="archetype-description" style="text-align: center;">Leading a resurrection narrative—rebirthing Ohio's industrial past into a next-gen capital market</div>
+                </div>
+
+                <div class="archetype-card">
+                    <div class="archetype-leader-name" style="color: #00d4ff;">Ray Leach</div>
+                    <div class="archetype-animal">Owl</div>
+                    <div class="archetype-description" style="text-align: center;">A wise observer and integrator of ecosystems. He doesn't rush, but sees long-term patterns others miss</div>
+                </div>
+
+                <div class="archetype-card">
+                    <div class="archetype-leader-name" style="color: #00d4ff;">Jill Meyer</div>
+                    <div class="archetype-animal">Fox</div>
+                    <div class="archetype-description" style="text-align: center;">Smart, adaptable, and politically tuned. She knows how to read rooms and mitigate risk</div>
+                </div>
+
+                <div class="archetype-card">
+                    <div class="archetype-leader-name" style="color: #00d4ff;">Mike Venerable</div>
+                    <div class="archetype-animal">Beaver</div>
+                    <div class="archetype-description" style="text-align: center;">A sector-focused builder. Diligent, precise, often underestimated, but foundational</div>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 212, 255, 0.02) 100%); border: 2px solid rgba(0, 212, 255, 0.3); border-radius: 16px; padding: 40px; margin-top: 30px;">
+                <div style="font-size: 28px; font-weight: 900; color: #00d4ff; margin-bottom: 20px; text-align: center;">Executive Presence & Leadership Style</div>
+                <div style="font-size: 18px; line-height: 1.8; color: rgba(255, 255, 255, 0.9); text-align: center; max-width: 1000px; margin: 0 auto;">
+                    All four fall into the category of Transparent Connectors—leaders who are visible enough to communicate purpose, without being self-promotional or overly media-facing. They are not "celebrity VCs"—and that's their power. Their credibility lies in their access, networks, and follow-through. It's capital with a conscience, not hype.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Leadership Scorecard -->
+    <div class="slide" data-slide="6" style="display: none;">
+        <div class="slide-title">Leadership Performance Scorecard</div>
+        <div class="content">
+            <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%); border: 2px solid rgba(0, 212, 255, 0.3); border-radius: 16px; padding: 40px;">
+                <div style="display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 20px; padding: 20px 25px; background: rgba(0, 212, 255, 0.15); border-radius: 12px; margin-bottom: 20px; font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 1.5px;">
+                    <div>Leader</div>
+                    <div style="text-align: center;">Brand Promise</div>
+                    <div style="text-align: center;">Green Alignment</div>
+                    <div style="text-align: center;">Innovation</div>
+                    <div style="text-align: center;">Overall</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 20px; padding: 25px; align-items: center; background: rgba(255, 255, 255, 0.04); border-radius: 12px; margin-bottom: 15px;">
+                    <div style="font-size: 24px; font-weight: 900; color: #00d4ff;">Mark Kvamme</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">9</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">8</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">9</div>
+                    <div style="text-align: center; font-size: 28px; font-weight: 900; color: #00d4ff;">9.0</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 20px; padding: 25px; align-items: center; background: rgba(255, 255, 255, 0.04); border-radius: 12px; margin-bottom: 15px;">
+                    <div style="font-size: 24px; font-weight: 900; color: #00d4ff;">Ray Leach</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">8</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">9</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">7</div>
+                    <div style="text-align: center; font-size: 28px; font-weight: 900; color: #00d4ff;">8.0</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 20px; padding: 25px; align-items: center; background: rgba(255, 255, 255, 0.04); border-radius: 12px; margin-bottom: 15px;">
+                    <div style="font-size: 24px; font-weight: 900; color: #00d4ff;">Jill Meyer</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">7</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">8</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">6</div>
+                    <div style="text-align: center; font-size: 28px; font-weight: 900; color: #00d4ff;">7.0</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr repeat(4, 1fr); gap: 20px; padding: 25px; align-items: center; background: rgba(255, 255, 255, 0.04); border-radius: 12px;">
+                    <div style="font-size: 24px; font-weight: 900; color: #00d4ff;">Mike Venerable</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">7</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">7</div>
+                    <div style="text-align: center; font-size: 24px; font-weight: 900; color: #00d4ff;">8</div>
+                    <div style="text-align: center; font-size: 28px; font-weight: 900; color: #00d4ff;">7.0</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 30px;">
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; border-left: 4px solid #00d4ff;">
+                    <div style="font-size: 16px; font-weight: 700; color: #00d4ff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Kvamme Analysis</div>
+                    <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">Excels at vision and innovation, with slight tension on impact messaging</div>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; border-left: 4px solid #00d4ff;">
+                    <div style="font-size: 16px; font-weight: 700; color: #00d4ff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Leach Analysis</div>
+                    <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">Strongest in social sustainability and ecosystem building</div>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; border-left: 4px solid #00d4ff;">
+                    <div style="font-size: 16px; font-weight: 700; color: #00d4ff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Meyer Analysis</div>
+                    <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">Plays supporting role in governance and civic continuity</div>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; border-left: 4px solid #00d4ff;">
+                    <div style="font-size: 16px; font-weight: 700; color: #00d4ff; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Venerable Analysis</div>
+                    <div style="font-size: 16px; line-height: 1.7; color: rgba(255, 255, 255, 0.85);">Balances vertical innovation with practical execution</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: AI Content Readiness -->
+    <div class="slide" data-slide="1">
+        <div class="slide-title">AI Content Readiness</div>
+        <div class="content">
+            <div class="comparison-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Website AI Optimization</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Moderate – modern design, mobile responsive, but little AI integration</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Low – static site, minimal interactivity</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Content Personalization</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Low – One-size-fits-all messaging</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Very Low – Barebones content</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Use of AI in Outreach</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Some evidence of CRM integration, but not AI-forward</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">None apparent</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Data Transparency & Reporting</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Regular reports, some interactive dashboards</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Less accessible, more bureaucratic structure</div>
+                </div>
+            </div>
+            
+            <div class="score-display">
+                <div class="score-label">Scored Readiness (1-10)</div>
+                <div class="score-row">
+                    <div>
+                        <div class="score-circle jobsohio">6.2</div>
+                        <div class="score-sublabel" style="color: #00d4ff;">JobsOhio</div>
+                    </div>
+                    <div>
+                        <div class="score-circle ohiofund">3.1</div>
+                        <div class="score-sublabel" style="color: #ffd93d;">The Ohio Fund</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="insight-label">Insight</div>
+                <div class="insight-text">JobsOhio has a more polished, investor-facing website and uses data and storytelling better. The Ohio Fund is still in early stages of digital maturity.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Product Performance -->
+    <div class="slide" data-slide="8" style="display: none;">
+        <div class="slide-title">Product Performance</div>
+        <div class="content">
+            <div class="comparison-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Capital Deployment</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">$400M+ per year, across sectors</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">$750M fund, but not fully deployed yet</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Job Creation / ROI</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">29,000+ new jobs in 2023; strong multiplier effect</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Too early to assess impact</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Program Agility</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">High – can move quickly, independently</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Low – bound to state regulatory processes</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Sector Diversification</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Broad: biotech, advanced manufacturing, logistics, etc.</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Intends to be broad, but no performance data yet</div>
+                </div>
+            </div>
+            
+            <div class="score-display">
+                <div class="score-label">Scored Performance (1-10)</div>
+                <div class="score-row">
+                    <div>
+                        <div class="score-circle jobsohio">8.1</div>
+                        <div class="score-sublabel" style="color: #00d4ff;">JobsOhio</div>
+                    </div>
+                    <div>
+                        <div class="score-circle ohiofund">4.5</div>
+                        <div class="score-sublabel" style="color: #ffd93d;">The Ohio Fund</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="insight-label">Insight</div>
+                <div class="insight-text">JobsOhio's track record, speed, and capital agility give it a significant edge. The Ohio Fund is promising but nascent.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Brand Promise -->
+    <div class="slide" data-slide="9" style="display: none;">
+        <div class="slide-title">Brand Promise</div>
+        <div class="content">
+            <div class="comparison-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Core Messaging</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value" style="font-size: 18px; font-weight: 700; color: #00d4ff;">"Private. Nimble. Powerful." Clear economic growth narrative</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Emphasizes transparency, accountability, and fairness</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Trust & Perception</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Some skepticism over lack of oversight, but respected by business</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">More trusted by public sector advocates, but unknown to most</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Stakeholder Engagement</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Strong with corporations and local dev agencies</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Primarily tied to government and state budget processes</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Mission Clarity</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Clear: accelerate job creation, attract investment</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Vague: "complement JobsOhio" without firm identity yet</div>
+                </div>
+            </div>
+            
+            <div class="score-display">
+                <div class="score-label">Scored Brand Promise (1-10)</div>
+                <div class="score-row">
+                    <div>
+                        <div class="score-circle jobsohio">7.8</div>
+                        <div class="score-sublabel" style="color: #00d4ff;">JobsOhio</div>
+                    </div>
+                    <div>
+                        <div class="score-circle ohiofund">5.2</div>
+                        <div class="score-sublabel" style="color: #ffd93d;">The Ohio Fund</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="insight-label">Insight</div>
+                <div class="insight-text">JobsOhio is better at owning and delivering its promise. The Ohio Fund is still defining its narrative and market position.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Brand Vulnerabilities -->
+    <div class="slide" data-slide="10" style="display: none;">
+        <div class="slide-title">Brand Vulnerabilities: Game Theory Analysis</div>
+        <div class="content">
+            <div class="comparison-grid">
+                <div class="metric-card">
+                    <div class="metric-title">Political Exposure</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">High – criticism for lack of transparency</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">Moderate – backed by governor, but tied to election cycles</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Duplication Risk</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Moderate – now faces redundancy due to The Ohio Fund</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">High – at risk of being redundant if JobsOhio dominates</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Structural Inflexibility</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">Low – private model allows freedom</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">High – public structure slows responsiveness</div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Brand Cannibalization Risk</div>
+                    <div class="metric-label">JobsOhio</div>
+                    <div class="metric-value">High – state now funding a parallel structure</div>
+                    <div class="metric-divider"></div>
+                    <div class="metric-label">The Ohio Fund</div>
+                    <div class="metric-value">High – hard to differentiate from JobsOhio</div>
+                </div>
+            </div>
+            
+            <div class="score-display">
+                <div class="score-label">Scored Vulnerability (1-10, inverse where 10 = least vulnerable)</div>
+                <div class="score-row">
+                    <div>
+                        <div class="score-circle jobsohio">6.3</div>
+                        <div class="score-sublabel" style="color: #00d4ff;">JobsOhio</div>
+                    </div>
+                    <div>
+                        <div class="score-circle ohiofund">5.0</div>
+                        <div class="score-sublabel" style="color: #ffd93d;">The Ohio Fund</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <div class="insight-label">Insight</div>
+                <div class="insight-text">Both face political and structural challenges, but The Ohio Fund has higher existential risk and bureaucratic rigidity.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Brand Archetypes -->
+    <div class="slide" data-slide="11" style="display: none;">
+        <div class="slide-title">Brand Archetypes</div>
+        <div class="content">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <div class="archetype-card" style="border-color: #00d4ff;">
+                    <div class="archetype-leader-name" style="color: #00d4ff;">JobsOhio</div>
+                    <div class="archetype-animal">The Ruler</div>
+                    <div class="archetype-description">
+                        <div style="margin-bottom: 15px;"><strong>Core:</strong> Power, Control, Stability</div>
+                        <div style="margin-bottom: 15px;"><strong>Narrative:</strong> "We lead Ohio's economic future" (High strength)</div>
+                        <div style="margin-bottom: 15px;"><strong>Resonance:</strong> Strong with business, less with public</div>
+                        <div><strong>Alignment:</strong> Very aligned – "ruler" fits investor-led growth</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <div style="font-size: 16px; color: rgba(255, 255, 255, 0.6); margin-bottom: 12px;">Archetype Fit Score</div>
+                        <div class="score-circle jobsohio">8.2</div>
+                    </div>
+                </div>
+
+                <div class="archetype-card" style="border-color: #ffd93d;">
+                    <div class="archetype-leader-name" style="color: #ffd93d;">The Ohio Fund</div>
+                    <div class="archetype-animal">The Caregiver</div>
+                    <div class="archetype-description">
+                        <div style="margin-bottom: 15px;"><strong>Core:</strong> Protection, Accountability, Responsibility</div>
+                        <div style="margin-bottom: 15px;"><strong>Narrative:</strong> "We safeguard investments for the public good" (Medium strength)</div>
+                        <div style="margin-bottom: 15px;"><strong>Resonance:</strong> More appeal to citizen trust, less with innovation-minded orgs</div>
+                        <div><strong>Alignment:</strong> Somewhat misaligned – caregiver may undercut innovation tone</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <div style="font-size: 16px; color: rgba(255, 255, 255, 0.6); margin-bottom: 12px;">Archetype Fit Score</div>
+                        <div class="score-circle ohiofund">6.1</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-box" style="margin-top: 30px;">
+                <div class="insight-label">Insight</div>
+                <div class="insight-text">JobsOhio's archetype aligns better with its mission and stakeholders. The Ohio Fund is positioned to be more protective than visionary.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: Final Scorecard -->
+    <div class="slide" data-slide="12" style="display: none;">
+        <div class="slide-title">Final Scorecard</div>
+        <div class="content">
+            <div class="final-scoreboard">
+                <div class="scoreboard-header">
+                    <div>Organization</div>
+                    <div>AI Readiness</div>
+                    <div>Product</div>
+                    <div>Promise</div>
+                    <div>Vulnerabilities</div>
+                    <div>Archetypes</div>
+                    <div>Average</div>
+                </div>
+
+                <div class="scoreboard-row">
+                    <div class="scoreboard-brand" style="color: #00d4ff;">JobsOhio</div>
+                    <div class="scoreboard-cell">6.2</div>
+                    <div class="scoreboard-cell">8.1</div>
+                    <div class="scoreboard-cell">7.8</div>
+                    <div class="scoreboard-cell">6.3</div>
+                    <div class="scoreboard-cell">8.2</div>
+                    <div class="final-score" style="color: #00d4ff;">7.32</div>
+                </div>
+
+                <div class="scoreboard-row">
+                    <div class="scoreboard-brand" style="color: #ffd93d;">The Ohio Fund</div>
+                    <div class="scoreboard-cell">3.1</div>
+                    <div class="scoreboard-cell">4.5</div>
+                    <div class="scoreboard-cell">5.2</div>
+                    <div class="scoreboard-cell">5.0</div>
+                    <div class="scoreboard-cell">6.1</div>
+                    <div class="final-score" style="color: #ffd93d; border-color: #ffd93d; background: rgba(255, 215, 61, 0.25);">4.76</div>
+                </div>
+            </div>
+
+            <div class="winner-section">
+                <div class="winner-title">
+                    CLEAR LEADER: <span style="color: #00d4ff;">JOBSOHIO</span>
+                </div>
+                <div class="winner-badge">Score Difference: 2.56 Points</div>
+                <div class="winner-insight">
+                    JobsOhio demonstrates superior performance across nearly all dimensions, particularly in product execution, brand clarity, and archetype alignment. While The Ohio Fund brings important accountability and transparency values, it remains in early development with limited track record. JobsOhio's private model enables speed and agility that public structures struggle to match, though both organizations face political vulnerabilities and potential duplication concerns in Ohio's economic development landscape.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+
+    <!-- Slide Indicators -->
+    <div class="slide-indicator" id="indicators"></div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 12;
+
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            if (n > totalSlides) currentSlide = totalSlides;
+            if (n < 1) currentSlide = 1;
+            
+            slides.forEach(slide => slide.style.display = 'none');
+            slides[currentSlide - 1].style.display = 'flex';
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            
+            updateIndicators();
+        }
+
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+
+        function updateIndicators() {
+            const indicatorContainer = document.getElementById('indicators');
+            indicatorContainer.innerHTML = '';
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'indicator-dot' + (i === currentSlide ? ' active' : '');
+                dot.onclick = () => {
+                    currentSlide = i;
+                    showSlide(currentSlide);
+                };
+                indicatorContainer.appendChild(dot);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
